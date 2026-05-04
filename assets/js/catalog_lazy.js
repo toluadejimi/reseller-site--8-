@@ -168,7 +168,16 @@
         });
     }
 
+    function humanizeCatalogError(msg) {
+        var s = String(msg || '');
+        if (/Connection error:|timed out|Operation timed out|bytes received|curl|SSL|errno/i.test(s)) {
+            return 'Something went wrong. Please try again.';
+        }
+        return s || 'Something went wrong. Please try again.';
+    }
+
     function showError(msg) {
+        var line = humanizeCatalogError(msg);
         var st = document.getElementById('catalog-lazy-state');
         var el = document.getElementById('catalog-lazy-error');
         var p = document.getElementById('catalog-lazy-error-text');
@@ -176,7 +185,22 @@
             st.style.display = 'none';
         }
         if (p) {
-            p.textContent = msg;
+            p.textContent = '';
+            var span = document.createElement('span');
+            span.className = 'catalog-lazy-error-msg';
+            span.textContent = line;
+            p.appendChild(span);
+            p.appendChild(document.createElement('br'));
+            var retry = document.createElement('a');
+            retry.href = '#';
+            retry.className = 'catalog-lazy-retry';
+            retry.setAttribute('role', 'button');
+            retry.textContent = 'Try again';
+            retry.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location.reload();
+            });
+            p.appendChild(retry);
         }
         if (el) {
             el.hidden = false;
@@ -249,6 +273,6 @@
             });
         })
         .catch(function () {
-            showError('Network error. Check your connection and try again.');
+            showError('Something went wrong. Please try again.');
         });
 })();

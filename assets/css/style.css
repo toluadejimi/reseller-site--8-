@@ -1424,6 +1424,27 @@ html.catalog-products-loading body.page-catalog {
     margin-bottom: 20px;
 }
 
+.catalog-lazy-error-msg {
+    display: inline;
+}
+
+.catalog-lazy-retry {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.catalog-lazy-retry:hover {
+    text-decoration: underline;
+}
+
+html[data-theme="dark"] .catalog-lazy-retry {
+    color: #a5b4fc;
+}
+
 .catalog-skeleton__toolbar {
     display: flex;
     flex-wrap: wrap;

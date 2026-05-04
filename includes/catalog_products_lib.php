@@ -21,7 +21,6 @@ function reseller_fetch_catalog_products(string $apiKey, string $baseUrl): array
     ]);
     $res = curl_exec($ch);
     $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
     curl_close($ch);
     if ($code === 200 && $res) {
         $data = json_decode($res, true);
@@ -39,7 +38,8 @@ function reseller_fetch_catalog_products(string $apiKey, string $baseUrl): array
                 $error = 'HTTP ' . $code . '. Check API key and reseller status on the platform.';
             }
         } else {
-            $error = $curlError ? 'Connection error: ' . $curlError : 'Could not reach ' . $baseUrl . '.';
+            // Do not expose raw cURL messages (timeouts, SSL, etc.) to the storefront.
+            $error = 'Something went wrong. Please try again.';
         }
     }
     return ['products' => $products, 'error' => $error];
