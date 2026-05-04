@@ -347,6 +347,151 @@ html[data-theme="dark"] body.page-reseller-index .catalog-page-intro {
     color: #94a3b8;
 }
 
+/* Catalog: wallet hero (above products) */
+.catalog-wallet-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    margin: 0 0 28px;
+    padding: clamp(22px, 4vw, 32px) clamp(22px, 4vw, 36px);
+    background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 28%, #6d28d9 55%, #4f46e5 100%);
+    box-shadow:
+        0 4px 6px -1px rgba(76, 29, 149, 0.35),
+        0 20px 40px -12px rgba(79, 70, 229, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.catalog-wallet-card__decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.catalog-wallet-card__orb {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    filter: blur(0.5px);
+}
+
+.catalog-wallet-card__orb--1 {
+    width: 180px;
+    height: 180px;
+    top: -60px;
+    right: -40px;
+    opacity: 0.9;
+}
+
+.catalog-wallet-card__orb--2 {
+    width: 120px;
+    height: 120px;
+    bottom: -30px;
+    right: 18%;
+    background: rgba(167, 139, 250, 0.25);
+    opacity: 0.85;
+}
+
+.catalog-wallet-card__orb--3 {
+    width: 90px;
+    height: 90px;
+    top: 35%;
+    right: 8%;
+    background: rgba(34, 211, 238, 0.12);
+    opacity: 0.7;
+}
+
+.catalog-wallet-card__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 24px;
+}
+
+.catalog-wallet-card__copy {
+    flex: 1;
+    min-width: min(100%, 220px);
+}
+
+.catalog-wallet-card__greeting {
+    margin: 0 0 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.92);
+    letter-spacing: 0.01em;
+}
+
+.catalog-wallet-card__label {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.72);
+}
+
+.catalog-wallet-card__amount {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+.catalog-wallet-card__currency {
+    margin-right: 0.12em;
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.catalog-wallet-card__actions {
+    flex-shrink: 0;
+}
+
+.catalog-wallet-card__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-family: var(--font);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.2s, border-color 0.2s, transform 0.12s;
+}
+
+.catalog-wallet-card__btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.65);
+    color: #fff;
+}
+
+.catalog-wallet-card__btn:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 520px) {
+    .catalog-wallet-card__inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .catalog-wallet-card__btn {
+        width: 100%;
+    }
+}
+
 .landing-eyebrow {
     display: inline-block;
     margin: 0 0 14px;

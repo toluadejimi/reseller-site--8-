@@ -164,6 +164,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     }
 }
 
+$catalogWalletBalance = null;
+$catalogWalletGreeting = '';
+if ($dbPath !== '' && $currentUser && function_exists('getWalletBalance')) {
+    $catalogWalletBalance = getWalletBalance((int) $currentUser['id']);
+    $rawName = trim((string) ($currentUser['name'] ?? ''));
+    if ($rawName !== '') {
+        $parts = preg_split('/\s+/u', $rawName, 2, PREG_SPLIT_NO_EMPTY);
+        $catalogWalletGreeting = $parts[0] ?? $rawName;
+    } else {
+        $em = (string) ($currentUser['email'] ?? '');
+        $catalogWalletGreeting = $em !== '' ? (explode('@', $em, 2)[0] ?: 'there') : 'there';
+    }
+}
+
 $bodyClass = 'page-reseller-index page-catalog';
 $layout = 'wide';
 require __DIR__ . '/includes/head.php';
@@ -177,6 +191,26 @@ require __DIR__ . '/includes/header.php';
     <p class="catalog-back"><a href="/" class="catalog-back__link">← Home</a></p>
     <h1 class="page-title catalog-page-title">Catalog</h1>
     <p class="catalog-page-intro text-muted">Browse by category, check stock, and order. Inventory loads in a moment after you open this page.</p>
+
+    <?php if ($dbPath !== '' && $currentUser && $catalogWalletBalance !== null): ?>
+    <aside class="catalog-wallet-card" aria-label="Wallet summary">
+        <div class="catalog-wallet-card__decor" aria-hidden="true">
+            <span class="catalog-wallet-card__orb catalog-wallet-card__orb--1"></span>
+            <span class="catalog-wallet-card__orb catalog-wallet-card__orb--2"></span>
+            <span class="catalog-wallet-card__orb catalog-wallet-card__orb--3"></span>
+        </div>
+        <div class="catalog-wallet-card__inner">
+            <div class="catalog-wallet-card__copy">
+                <p class="catalog-wallet-card__greeting">Hey, <?php echo htmlspecialchars($catalogWalletGreeting); ?></p>
+                <p class="catalog-wallet-card__label">Balance</p>
+                <p class="catalog-wallet-card__amount"><span class="catalog-wallet-card__currency">₦</span><?php echo number_format($catalogWalletBalance, 2); ?></p>
+            </div>
+            <div class="catalog-wallet-card__actions">
+                <a href="/wallet" class="catalog-wallet-card__btn">Fund wallet</a>
+            </div>
+        </div>
+    </aside>
+    <?php endif; ?>
 
     <div
         id="catalog-root"
