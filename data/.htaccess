@@ -1,0 +1,9 @@
+# Deny every HTTP request under this folder. PHP opens SQLite via the
+# filesystem (PDO), not via a URL, so the app keeps working.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

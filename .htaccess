@@ -1,0 +1,20 @@
+# Shared hosting (Apache / LiteSpeed): hardening + block database downloads
+# PHP still runs normally; these rules only affect direct HTTP file access.
+
+# Do not allow directory listing (e.g. /data/)
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# Block direct download of SQLite / SQL dumps and WAL/SHM sidecar files
+<IfModule mod_authz_core.c>
+    <FilesMatch "(?i)(\.(sqlite3?|sqlitedb|db|sql)|-(shm|wal))$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "(?i)\.(sqlite3?|sqlitedb|db|sql)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
