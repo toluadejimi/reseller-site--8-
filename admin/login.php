@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../admin_helpers.php';
 
 if (isAdminLoggedIn()) {
-    header('Location: index.php');
+    header('Location: /admin/');
     exit;
 }
 
@@ -29,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$noDb) {
             setSetting('admin_password_hash', $hash);
             $_SESSION['admin_logged_in'] = true;
             $_SESSION['admin_role'] = 'admin';
-            header('Location: index.php');
+            header('Location: /admin/');
             exit;
         }
     } else {
         if (adminLogin($password)) {
-            header('Location: index.php');
+            header('Location: /admin/');
             exit;
         }
         $error = 'Invalid password.';
@@ -44,16 +44,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$noDb) {
 $adminPageTitle = $setup ? 'Set admin password' : 'Admin login';
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="is-loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php require __DIR__ . '/../includes/theme_head.php'; ?>
     <title><?php echo $setup ? 'Setup' : 'Login'; ?> – Reseller Admin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
     <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
+<?php require __DIR__ . '/../includes/theme_body_open.php'; ?>
 <div class="site-wrap narrow" style="margin-top: 60px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <button type="button" class="theme-toggle js-theme-toggle" aria-label="Switch color theme" aria-pressed="false" title="Theme">
+            <svg class="theme-toggle__sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <svg class="theme-toggle__moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+    </div>
     <div class="auth-card">
         <h1 class="page-title"><?php echo $noDb ? 'Admin' : ($setup ? 'Set admin password' : 'Admin login'); ?></h1>
         <?php if ($noDb): ?>
@@ -78,5 +87,6 @@ $adminPageTitle = $setup ? 'Set admin password' : 'Admin login';
         <?php endif; ?>
     </div>
 </div>
+<?php require __DIR__ . '/../includes/theme_footer.php'; ?>
 </body>
 </html>

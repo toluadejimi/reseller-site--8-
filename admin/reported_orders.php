@@ -79,7 +79,7 @@ require __DIR__ . '/includes/header.php';
                             </td>
                             <td>
                                 <?php if (!empty($o['api_order_id'])): ?>
-                                <form method="post" action="report_to_platform.php" class="admin-form-inline">
+                                <form method="post" action="/admin/report_to_platform" class="admin-form-inline">
                                     <input type="hidden" name="order_id" value="<?php echo (int)$o['id']; ?>">
                                     <button type="submit" class="btn btn-primary btn-sm">Report to main site</button>
                                 </form>

@@ -45,10 +45,17 @@
     background: #fff;
     border-bottom: 1px solid var(--color-border, #e2e8f0);
     display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
     padding: 0 24px;
 }
 .admin-content { padding: 24px; flex: 1; }
-.admin-page-title { margin: 0 0 20px; font-size: 1.35rem; font-weight: 700; }
+.admin-page-title {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
 .admin-card { background: #fff; border: 1px solid var(--color-border, #e2e8f0); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .admin-card-title { margin: 0 0 6px; font-size: 1.2rem; font-weight: 700; }
 .admin-card-desc { color: #64748b; font-size: 0.9375rem; margin: 0 0 20px; }

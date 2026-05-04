@@ -1,5 +1,44 @@
-# Shared hosting (Apache / LiteSpeed): hardening + block database downloads
-# PHP still runs normally; these rules only affect direct HTTP file access.
+# Shared hosting (Apache / LiteSpeed)
+# ---------------------------------------------------------------------------
+# Clean URLs: hide .php (requires mod_rewrite). If 500 errors, ask host to
+# enable mod_rewrite. If the site runs in a subdirectory, add:
+#   RewriteBase /your-subfolder/
+# ---------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Extensionless wallet callback (fund_callback.php still works for gateways)
+    RewriteRule ^fund_callback/?$ fund_callback.php [L,QSA]
+
+    # 301: /admin/index.php → /admin/
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+admin/index\.php(\?[^\s]*)?\sHTTP/ [NC]
+    RewriteRule .* /admin/ [R=301,L,QSA]
+
+    # 301: /index.php → /
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.php(\?[^\s]*)?\sHTTP/ [NC]
+    RewriteRule ^index\.php$ / [R=301,L,QSA]
+
+    # 301: any other *.php → same path without extension (except payment callback)
+    RewriteCond %{THE_REQUEST} \s/+(.+)\.php(\?[^\s]*)?\sHTTP/ [NC]
+    RewriteCond %{REQUEST_URI} !fund_callback\.php$ [NC]
+    RewriteCond %{THE_REQUEST} !\s/+index\.php [NC]
+    RewriteCond %{THE_REQUEST} !\s/+admin/index\.php [NC]
+    RewriteRule ^(.+)\.php$ /$1 [R=301,L,QSA]
+
+    # /path/ → /path when path.php exists (avoids .../path/.php miss)
+    RewriteCond %{REQUEST_URI} ^/(.+)/$
+    RewriteCond %{DOCUMENT_ROOT}/%1.php -f
+    RewriteRule ^ /%1 [L,QSA]
+
+    # Internally serve foo.php for /foo (and /admin/bar, etc.)
+    # DOCUMENT_ROOT + REQUEST_URI is reliable; %{REQUEST_FILENAME}.php -f often
+    # fails in .htaccess on some Apache/LiteSpeed setups (every path fell through
+    # to DirectoryIndex / landing until .php was added).
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.php -f
+    RewriteRule ^ %{REQUEST_URI}.php [L,QSA]
+</IfModule>
 
 # Do not allow directory listing (e.g. /data/)
 <IfModule mod_autoindex.c>

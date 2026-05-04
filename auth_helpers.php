@@ -134,7 +134,7 @@ function deductWalletBalance(int $userId, float $amount): bool
 function requireLogin(): void
 {
     if (getCurrentUser() === null) {
-        header('Location: login.php?redirect=' . urlencode($_SERVER['REQUEST_URI'] ?? 'index.php'));
+        header('Location: /login?redirect=' . urlencode($_SERVER['REQUEST_URI'] ?? '/'));
         exit;
     }
 }
@@ -399,4 +399,24 @@ function completeFundRequestByReference(string $reference, float $amount): bool
         $pdo->rollBack();
         return false;
     }
+}
+
+/**
+ * Sanitize ?redirect= for post-login Location (same-origin path only).
+ */
+function safe_internal_redirect_path($p, string $default = '/catalog'): string
+{
+    if (!is_string($p) || $p === '' || strlen($p) > 512) {
+        return $default;
+    }
+    if ($p[0] !== '/') {
+        return $default;
+    }
+    if (strlen($p) > 1 && $p[1] === '/') {
+        return $default;
+    }
+    if (strpos($p, "\0") !== false || strpos($p, "\r") !== false || strpos($p, "\n") !== false) {
+        return $default;
+    }
+    return $p;
 }

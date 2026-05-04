@@ -2,7 +2,7 @@
 /**
  * One-time script: creates the includes/ folder and head.php, header.php, footer.php
  * if they are missing. Upload this file to your reseller site root (same folder as index.php),
- * run it once in the browser: https://plugmaual.biz/create_includes.php
+ * run it once in the browser: https://yoursite.com/create_includes (or create_includes.php)
  * Then delete create_includes.php for security.
  */
 $baseDir = __DIR__;
@@ -43,7 +43,7 @@ $dbPath = isset($dbPath) ? $dbPath : (defined('DB_PATH') ? DB_PATH : '');
 ?>
 <header class="site-header">
     <div class="site-header-inner">
-        <a href="index.php" class="site-brand">
+        <a href="/" class="site-brand">
             <?php if ($logoUrl): ?>
                 <img src="<?php echo htmlspecialchars($logoUrl); ?>" alt="<?php echo htmlspecialchars($businessName); ?>" class="site-logo">
             <?php endif; ?>
@@ -55,14 +55,14 @@ $dbPath = isset($dbPath) ? $dbPath : (defined('DB_PATH') ? DB_PATH : '');
                 <?php
                 $headerBalance = (function_exists('getWalletBalance')) ? getWalletBalance((int)$currentUser['id']) : 0;
                 ?>
-                <a href="wallet.php" class="nav-wallet" title="My Wallet">₦<?php echo number_format($headerBalance, 2); ?></a>
-                <a href="my_orders.php">My Orders</a>
-                <a href="profile.php">Profile</a>
-                <a href="wallet.php">Wallet</a>
-                <a href="logout.php">Logout</a>
+                <a href="/wallet" class="nav-wallet" title="My Wallet">₦<?php echo number_format($headerBalance, 2); ?></a>
+                <a href="/my_orders">My Orders</a>
+                <a href="/profile">Profile</a>
+                <a href="/wallet">Wallet</a>
+                <a href="/logout">Logout</a>
             <?php else: ?>
-                <a href="login.php">Login</a>
-                <a href="register.php">Register</a>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
             <?php endif; ?>
         </nav>
         <?php endif; ?>
@@ -77,7 +77,7 @@ HEADER,
         $footerName = isset($businessName) ? $businessName : (defined('BUSINESS_NAME') ? BUSINESS_NAME : (defined('SITE_TITLE') ? SITE_TITLE : 'Reseller Store'));
         $footerYear = date('Y');
         ?>
-        <p class="mb-0">&copy; <?php echo (int) $footerYear; ?> <a href="index.php"><?php echo htmlspecialchars($footerName); ?></a>. <a href="admin/">Admin</a></p>
+        <p class="mb-0">&copy; <?php echo (int) $footerYear; ?> <a href="/"><?php echo htmlspecialchars($footerName); ?></a>.</p>
     </footer>
     <?php
     $supportTelegram = function_exists('getSetting') ? (getSetting('telegram_url') ?: '') : '';
@@ -122,9 +122,9 @@ if (!empty($created)) {
     echo '<p style="color:green;">Created: ' . htmlspecialchars(implode(', ', $created)) . '</p>';
 }
 if (empty($errors) && (empty($created) || count($created) === count($files))) {
-    echo '<p><strong>Done.</strong> <a href="index.php">Go to store</a></p>';
+    echo '<p><strong>Done.</strong> <a href="/">Go to store</a></p>';
     echo '<p style="color:#666;">Delete this file (create_includes.php) from the server for security.</p>';
 } elseif (!empty($created)) {
-    echo '<p><a href="index.php">Try index.php</a></p>';
+    echo '<p><a href="/">Try again</a></p>';
 }
 echo '</body></html>';

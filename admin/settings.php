@@ -203,8 +203,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="form-group">
                 <label for="sprintpay_callback_url">Callback URL</label>
-                <input type="text" id="sprintpay_callback_url" name="sprintpay_callback_url" value="<?php echo htmlspecialchars($sprintpayCallbackUrl); ?>" placeholder="https://yoursite.com/fund_callback.php">
-                <p class="help">Full URL to fund_callback.php (SprintPay POSTs here after payment).</p>
+                <input type="text" id="sprintpay_callback_url" name="sprintpay_callback_url" value="<?php echo htmlspecialchars($sprintpayCallbackUrl); ?>" placeholder="https://yoursite.com/fund_callback">
+                <p class="help">Full URL to fund_callback (or fund_callback.php; SprintPay POSTs here after payment).</p>
             </div>
             <div class="form-group">
                 <label for="sprintpay_payment_url">Payment / checkout URL (optional)</label>

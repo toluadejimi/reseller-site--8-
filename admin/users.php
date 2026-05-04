@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $amount = (float) $_POST['amount'];
             if ($amount > 0 && $userId > 0) {
                 if (adminCreditWallet($userId, $amount)) {
-                    header('Location: users.php?funded=1&user_id=' . $userId);
+                    header('Location: /admin/users?funded=1&user_id=' . $userId);
                     exit;
                 }
                 $error = 'Failed to credit wallet.';
@@ -85,7 +85,7 @@ require __DIR__ . '/includes/header.php';
                             <td class="admin-actions-cell">
                                 <div class="admin-actions">
                                     <button type="button" class="btn btn-primary btn-sm admin-btn-fund" data-user-id="<?php echo (int) $u['id']; ?>" data-user-name="<?php echo htmlspecialchars($u['name']); ?>" data-user-email="<?php echo htmlspecialchars($u['email']); ?>">Fund wallet</button>
-                                    <form method="post" action="delete_user.php" class="admin-form-inline" onsubmit="return confirm('Permanently delete this customer? Their orders will be kept but unlinked. This cannot be undone.');">
+                                    <form method="post" action="/admin/delete_user" class="admin-form-inline" onsubmit="return confirm('Permanently delete this customer? Their orders will be kept but unlinked. This cannot be undone.');">
                                         <input type="hidden" name="user_id" value="<?php echo (int) $u['id']; ?>">
                                         <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                     </form>
@@ -108,7 +108,7 @@ require __DIR__ . '/includes/header.php';
                     <h3 id="fundModalTitle">Fund wallet</h3>
                     <button type="button" class="admin-modal-close" id="fundModalClose" aria-label="Close">&times;</button>
                 </div>
-                <form method="post" action="users.php">
+                <form method="post" action="/admin/users">
                     <input type="hidden" name="action" value="fund">
                     <input type="hidden" name="user_id" id="fundUserId" value="">
                     <div class="admin-modal-body">

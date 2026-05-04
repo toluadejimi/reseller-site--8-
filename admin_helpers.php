@@ -59,7 +59,7 @@ function adminLogout(): void
 function requireAdmin(): void
 {
     $base = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
-    $loginUrl = ($base !== '' ? $base . '/' : '') . 'login.php';
+    $loginUrl = ($base !== '' ? $base . '/' : '') . 'login';
     if (!isAdminLoggedIn()) {
         header('Location: ' . $loginUrl);
         exit;

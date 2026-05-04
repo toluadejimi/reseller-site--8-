@@ -20,7 +20,7 @@ $messageType = '';
 $fundReference = null;
 
 if (!$enabled) {
-    header('Location: wallet.php');
+    header('Location: /wallet');
     exit;
 }
 
@@ -87,7 +87,7 @@ require __DIR__ . '/includes/header.php';
         </form>
         <?php endif; ?>
         <p class="auth-links">
-            <a href="wallet.php">Back to Wallet</a>
+            <a href="/wallet">Back to Wallet</a>
         </p>
     </div>
 

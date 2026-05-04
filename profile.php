@@ -23,7 +23,7 @@ require __DIR__ . '/includes/header.php';
         </ul>
     </div>
     <p class="auth-links">
-        <a href="wallet.php">Wallet</a><span>|</span><a href="index.php">Store</a><span>|</span><a href="logout.php">Logout</a>
+        <a href="/wallet">Wallet</a><span>|</span><a href="/">Store</a><span>|</span><a href="/logout">Logout</a>
     </p>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

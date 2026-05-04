@@ -28,7 +28,7 @@ require __DIR__ . '/includes/header.php';
         <p class="balance-big">₦<?php echo number_format($balance, 2); ?></p>
         <p class="text-muted mt-1">Current balance</p>
         <?php if ($sprintPayEnabled): ?>
-            <a href="fund.php" class="btn btn-primary mt-2">Fund with SprintPay</a>
+            <a href="/fund" class="btn btn-primary mt-2">Fund with SprintPay</a>
         <?php else: ?>
             <p class="text-muted mt-2 mb-0">To fund your wallet, contact the store owner. SprintPay can be enabled in the reseller config.</p>
         <?php endif; ?>
@@ -68,17 +68,17 @@ require __DIR__ . '/includes/header.php';
                     <p class="pagination-info text-muted"><?php echo $txTotal; ?> transaction<?php echo $txTotal !== 1 ? 's' : ''; ?> · Page <?php echo $txPage; ?> of <?php echo $txTotalPages; ?></p>
                     <ul class="pagination">
                         <?php if ($txPage > 1): ?>
-                            <li><a href="wallet.php?page=<?php echo $txPage - 1; ?>" class="pagination-link" aria-label="Previous">‹ Prev</a></li>
+                            <li><a href="/wallet?page=<?php echo $txPage - 1; ?>" class="pagination-link" aria-label="Previous">‹ Prev</a></li>
                         <?php endif; ?>
                         <?php
                         $from = max(1, $txPage - 2);
                         $to = min($txTotalPages, $txPage + 2);
                         for ($i = $from; $i <= $to; $i++):
                         ?>
-                            <li><a href="wallet.php?page=<?php echo $i; ?>" class="pagination-link <?php echo $i === $txPage ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
+                            <li><a href="/wallet?page=<?php echo $i; ?>" class="pagination-link <?php echo $i === $txPage ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
                         <?php endfor; ?>
                         <?php if ($txPage < $txTotalPages): ?>
-                            <li><a href="wallet.php?page=<?php echo $txPage + 1; ?>" class="pagination-link" aria-label="Next">Next ›</a></li>
+                            <li><a href="/wallet?page=<?php echo $txPage + 1; ?>" class="pagination-link" aria-label="Next">Next ›</a></li>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -87,7 +87,7 @@ require __DIR__ . '/includes/header.php';
     </div>
 
     <p class="auth-links">
-        <a href="profile.php">Profile</a><span>|</span><a href="index.php">Store</a><span>|</span><a href="logout.php">Logout</a>
+        <a href="/profile">Profile</a><span>|</span><a href="/">Store</a><span>|</span><a href="/logout">Logout</a>
     </p>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

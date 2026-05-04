@@ -38,7 +38,7 @@ require __DIR__ . '/includes/header.php';
     <?php if (empty($orders)): ?>
         <div class="card orders-empty-card">
             <p class="text-muted mb-1">You have no orders yet.</p>
-            <p class="mb-0"><a href="catalog.php" class="btn btn-primary">Browse products</a></p>
+            <p class="mb-0"><a href="/catalog" class="btn btn-primary">Browse products</a></p>
         </div>
     <?php else: ?>
         <div class="card table-card orders-card">
@@ -57,7 +57,7 @@ require __DIR__ . '/includes/header.php';
                         <?php foreach ($orders as $o): ?>
                         <tr>
                             <td class="orders-table-date"><?php echo htmlspecialchars(date('M j, Y g:i A', strtotime($o['created_at']))); ?></td>
-                            <td class="orders-table-product"><a href="order_details.php?id=<?php echo (int) $o['id']; ?>" class="order-product-link"><?php echo htmlspecialchars($o['product_name']); ?></a></td>
+                            <td class="orders-table-product"><a href="/order_details?id=<?php echo (int) $o['id']; ?>" class="order-product-link"><?php echo htmlspecialchars($o['product_name']); ?></a></td>
                             <td class="orders-table-qty"><?php echo (int) $o['qty']; ?></td>
                             <td class="orders-table-total">₦<?php echo number_format((float) $o['total_amount'], 2); ?></td>
                             <td class="orders-table-status">
@@ -82,17 +82,17 @@ require __DIR__ . '/includes/header.php';
                     <p class="pagination-info text-muted"><?php echo $ordersTotal; ?> order<?php echo $ordersTotal !== 1 ? 's' : ''; ?> · Page <?php echo $orderPage; ?> of <?php echo $ordersTotalPages; ?></p>
                     <ul class="pagination">
                         <?php if ($orderPage > 1): ?>
-                            <li><a href="my_orders.php?page=<?php echo $orderPage - 1; ?>" class="pagination-link" aria-label="Previous">‹ Prev</a></li>
+                            <li><a href="/my_orders?page=<?php echo $orderPage - 1; ?>" class="pagination-link" aria-label="Previous">‹ Prev</a></li>
                         <?php endif; ?>
                         <?php
                         $from = max(1, $orderPage - 2);
                         $to = min($ordersTotalPages, $orderPage + 2);
                         for ($i = $from; $i <= $to; $i++):
                         ?>
-                            <li><a href="my_orders.php?page=<?php echo $i; ?>" class="pagination-link <?php echo $i === $orderPage ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
+                            <li><a href="/my_orders?page=<?php echo $i; ?>" class="pagination-link <?php echo $i === $orderPage ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
                         <?php endfor; ?>
                         <?php if ($orderPage < $ordersTotalPages): ?>
-                            <li><a href="my_orders.php?page=<?php echo $orderPage + 1; ?>" class="pagination-link" aria-label="Next">Next ›</a></li>
+                            <li><a href="/my_orders?page=<?php echo $orderPage + 1; ?>" class="pagination-link" aria-label="Next">Next ›</a></li>
                         <?php endif; ?>
                     </ul>
                 </nav>
@@ -101,7 +101,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <p class="auth-links">
-        <a href="profile.php">Profile</a><span>|</span><a href="wallet.php">Wallet</a><span>|</span><a href="index.php">Store</a><span>|</span><a href="logout.php">Logout</a>
+        <a href="/profile">Profile</a><span>|</span><a href="/wallet">Wallet</a><span>|</span><a href="/">Store</a><span>|</span><a href="/logout">Logout</a>
     </p>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

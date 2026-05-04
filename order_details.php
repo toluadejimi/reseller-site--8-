@@ -7,12 +7,12 @@ $userId = (int) $user['id'];
 
 $orderId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($orderId < 1) {
-    header('Location: my_orders.php');
+    header('Location: /my_orders');
     exit;
 }
 $order = getOrderById($orderId);
 if (!$order || (int) $order['user_id'] !== $userId) {
-    header('Location: my_orders.php');
+    header('Location: /my_orders');
     exit;
 }
 
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['report_order'])) {
     $reason = trim($_POST['report_reason'] ?? '');
     $err = reportOrder($orderId, $userId, $reason);
     if ($err === null) {
-        header('Location: order_details.php?id=' . $orderId . '&reported=1');
+        header('Location: /order_details?id=' . $orderId . '&reported=1');
         exit;
     }
     $reportError = $err;
@@ -50,7 +50,7 @@ require __DIR__ . '/includes/head.php';
 require __DIR__ . '/includes/header.php';
 ?>
 <div class="site-wrap <?php echo isset($layout) && $layout === 'wide' ? 'wide' : ''; ?>">
-    <p class="breadcrumb"><a href="my_orders.php">My Orders</a> → Order #<?php echo (int) $order['id']; ?></p>
+    <p class="breadcrumb"><a href="/my_orders">My Orders</a> → Order #<?php echo (int) $order['id']; ?></p>
     <h1 class="page-title">Order details</h1>
 
     <?php if ($reportMessage): ?>
@@ -148,7 +148,7 @@ require __DIR__ . '/includes/header.php';
                 <h3 id="reportModalTitle">Report order</h3>
                 <button type="button" class="modal-close" id="reportModalClose" aria-label="Close">&times;</button>
             </div>
-            <form method="post" action="order_details.php?id=<?php echo (int) $orderId; ?>">
+            <form method="post" action="/order_details?id=<?php echo (int) $orderId; ?>">
                 <input type="hidden" name="report_order" value="1">
                 <div class="modal-body">
                     <p class="text-muted">Please enter the reason for reporting this order (optional). Admin will review and may replace the item.</p>
@@ -164,7 +164,7 @@ require __DIR__ . '/includes/header.php';
     </div>
 
     <p class="auth-links">
-        <a href="my_orders.php">← Back to My Orders</a><span>|</span><a href="profile.php">Profile</a><span>|</span><a href="wallet.php">Wallet</a><span>|</span><a href="index.php">Store</a><span>|</span><a href="logout.php">Logout</a>
+        <a href="/my_orders">← Back to My Orders</a><span>|</span><a href="/profile">Profile</a><span>|</span><a href="/wallet">Wallet</a><span>|</span><a href="/">Store</a><span>|</span><a href="/logout">Logout</a>
     </p>
 </div>
 

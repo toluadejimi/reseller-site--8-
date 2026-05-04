@@ -10,8 +10,14 @@ RESELLER MINI-SITE
    - LOGO_URL: Optional URL or path to your logo image
    - For end-user wallet funding: set SPRINTPAY_* keys if you use SprintPay (see below).
 
+LOCAL DEV (php built-in server)
+- The built-in server ignores .htaccess. From this folder run:
+    php -S localhost:8989 router.php
+  Then open http://localhost:8989/catalog (no .php needed). Without router.php,
+  only / and *.php paths work; /catalog would 404 or fall through to another handler.
+
 CALLBACK URL (SprintPay / e_fund)
-- When this folder is your document root (e.g. php -S localhost:9091 -t reseller-site), use:
+- When this folder is your document root (e.g. php -S localhost:8989 router.php), use:
   https://your-domain/fund_callback.php   (no "reseller-site" in path)
 - When the main Laravel app serves the callback (same domain as main site), use:
   https://your-domain/reseller-site/fund_callback

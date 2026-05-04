@@ -1,6 +1,6 @@
 <?php
 /**
- * Reseller Mini-Site - Landing page (shop lives on catalog.php).
+ * Reseller Mini-Site - Landing page (shop lives at /catalog).
  */
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -24,6 +24,7 @@ if ($dbPath !== '') {
     require_once __DIR__ . '/auth_helpers.php';
 }
 $currentUser = function_exists('getCurrentUser') ? getCurrentUser() : null;
+$catalogUrl = ($dbPath !== '' && !$currentUser) ? '/login?redirect=' . rawurlencode('/catalog') : '/catalog';
 
 $siteTitle = (function_exists('getSetting') && getSetting('site_title') !== null && getSetting('site_title') !== '') ? getSetting('site_title') : (defined('SITE_TITLE') ? SITE_TITLE : 'Reseller Store');
 $businessName = (function_exists('getSetting') && getSetting('business_name') !== null && getSetting('business_name') !== '') ? getSetting('business_name') : (defined('BUSINESS_NAME') ? BUSINESS_NAME : $siteTitle);
@@ -39,7 +40,7 @@ require __DIR__ . '/includes/header.php';
 
     <?php if ($dbPath !== '' && !$currentUser): ?>
         <div class="reseller-auth-prompt">
-            <a href="login.php?redirect=<?php echo urlencode('catalog.php'); ?>">Login</a> or <a href="register.php">Register</a> to manage your wallet and orders.
+            <a href="/login?redirect=<?php echo urlencode('/catalog'); ?>">Login</a> or <a href="/register?redirect=<?php echo urlencode('/catalog'); ?>">Register</a> to browse the catalog and manage your wallet.
         </div>
     <?php endif; ?>
 
@@ -50,11 +51,11 @@ require __DIR__ . '/includes/header.php';
                 <h1 id="landing-hero-heading" class="landing-hero__title">Easy social accounts that boost your business</h1>
                 <p class="landing-hero__lead">Skip the slow setup and unreliable sources. Stock up on quality social presence and digital services in one place—clear pricing, fast fulfilment, and a checkout flow built for people who resell, run ads, or scale brands every day.</p>
                 <div class="landing-hero__actions">
-                    <a href="catalog.php" class="btn btn-primary landing-hero__btn-primary">Browse catalog</a>
+                    <a href="<?php echo htmlspecialchars($catalogUrl); ?>" class="btn btn-primary landing-hero__btn-primary">Browse catalog</a>
                     <?php if ($dbPath !== '' && !$currentUser): ?>
-                        <a href="register.php" class="btn btn-secondary landing-hero__btn-secondary">Create free account</a>
+                        <a href="/register" class="btn btn-secondary landing-hero__btn-secondary">Create free account</a>
                     <?php elseif ($dbPath !== '' && $currentUser): ?>
-                        <a href="wallet.php" class="btn btn-secondary landing-hero__btn-secondary">Fund wallet</a>
+                        <a href="/wallet" class="btn btn-secondary landing-hero__btn-secondary">Fund wallet</a>
                     <?php endif; ?>
                 </div>
                 <ul class="landing-hero__bullets" aria-label="Key benefits">
@@ -119,7 +120,7 @@ require __DIR__ . '/includes/header.php';
             <li class="landing-step"><span class="landing-step__num">2</span><span class="landing-step__body"><strong class="landing-step__title">Check out securely</strong><span class="landing-step__desc">Use your wallet balance when registered, or complete purchase flow as enabled on this store.</span></span></li>
             <li class="landing-step"><span class="landing-step__num">3</span><span class="landing-step__body"><strong class="landing-step__title">Deploy and scale</strong><span class="landing-step__desc">Put accounts to work for ads, organic reach, or resale—then reorder as demand grows.</span></span></li>
         </ol>
-        <p class="landing-steps__cta"><a href="catalog.php" class="btn btn-primary landing-hero__btn-primary">Open catalog</a></p>
+        <p class="landing-steps__cta"><a href="<?php echo htmlspecialchars($catalogUrl); ?>" class="btn btn-primary landing-hero__btn-primary">Open catalog</a></p>
     </section>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

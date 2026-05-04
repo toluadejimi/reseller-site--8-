@@ -1,9 +1,10 @@
+    <?php if (empty($authSplitPage)): ?>
     <footer class="site-footer">
         <?php
         $footerName = isset($businessName) ? $businessName : (defined('BUSINESS_NAME') ? BUSINESS_NAME : (defined('SITE_TITLE') ? SITE_TITLE : 'Reseller Store'));
         $footerYear = date('Y');
         ?>
-        <p class="mb-0">&copy; <?php echo (int) $footerYear; ?> <a href="index.php"><?php echo htmlspecialchars($footerName); ?></a>. <a href="admin/">Admin</a></p>
+        <p class="mb-0">&copy; <?php echo (int) $footerYear; ?> <a href="/"><?php echo htmlspecialchars($footerName); ?></a>.</p>
     </footer>
     <?php
     $supportTelegram = function_exists('getSetting') ? (getSetting('telegram_url') ?: '') : '';
@@ -19,6 +20,8 @@
         <?php endif; ?>
     </div>
     <?php endif; ?>
+    <?php endif; ?>
 </div>
+<?php require __DIR__ . '/theme_footer.php'; ?>
 </body>
 </html>
