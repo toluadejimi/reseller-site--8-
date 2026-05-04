@@ -189,8 +189,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <p class="catalog-back"><a href="/" class="catalog-back__link">← Home</a></p>
-    <h1 class="page-title catalog-page-title">Catalog</h1>
-    <p class="catalog-page-intro text-muted">Browse by category, check stock, and order. Inventory loads in a moment after you open this page.</p>
+    <h1 class="sr-only">Catalog</h1>
 
     <?php if ($dbPath !== '' && $currentUser && $catalogWalletBalance !== null): ?>
     <aside class="catalog-wallet-card" aria-label="Wallet summary">
