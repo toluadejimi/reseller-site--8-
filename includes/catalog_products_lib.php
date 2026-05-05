@@ -15,7 +15,11 @@ function reseller_fetch_catalog_products(string $apiKey, string $baseUrl): array
     $ch = curl_init($baseUrl . '/api/reseller/products');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER => ['X-Api-Key: ' . $apiKey],
+        CURLOPT_HTTPHEADER => [
+            'X-Api-Key: ' . $apiKey,
+            'Accept: application/json',
+        ],
+        CURLOPT_USERAGENT => 'reseller-mini-site/1.0 (+https://example.com)',
         CURLOPT_TIMEOUT => 15,
         CURLOPT_FOLLOWLOCATION => true,
     ]);
@@ -35,7 +39,11 @@ function reseller_fetch_catalog_products(string $apiKey, string $baseUrl): array
             if (is_array($data) && isset($data['message']) && (string) $data['message'] !== '') {
                 $error = (string) $data['message'];
             } else {
-                $error = 'HTTP ' . $code . '. Check API key and reseller status on the platform.';
+                if ($code === 415) {
+                    $error = 'Something went wrong. Please try again.';
+                } else {
+                    $error = 'HTTP ' . $code . '. Check API key and reseller status on the platform.';
+                }
             }
         } else {
             // Do not expose raw cURL messages (timeouts, SSL, etc.) to the storefront.
