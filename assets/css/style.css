@@ -1772,7 +1772,9 @@ body.page-auth-split .site-wrap--auth-split {
     margin: 0;
 }
 
-@media (max-width: 900px) {
+/* Stack only on narrow phones. Breakpoint was 900px so a docked DevTools
+   panel (or any viewport under 900px) forced one column even when CSS loaded. */
+@media (max-width: 640px) {
     .auth-split {
         grid-template-columns: 1fr;
         min-height: auto;
