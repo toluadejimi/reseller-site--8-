@@ -36,7 +36,53 @@ if ($raw !== false && $raw !== '' && trim($raw) !== '') {
     }
 }
 $input = array_merge($jsonBody, $_GET, $_POST);
-$providedKey = (string)($input['key'] ?? '');
+
+function fund_callback_normalize_auth_header(): string
+{
+    $h = '';
+    if (function_exists('getallheaders')) {
+        foreach (getallheaders() as $k => $v) {
+            if (strtolower((string) $k) === 'authorization') {
+                $h = trim((string) $v);
+                break;
+            }
+        }
+    }
+    if ($h === '' && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $h = trim((string) $_SERVER['HTTP_AUTHORIZATION']);
+    }
+    if ($h === '' && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $h = trim((string) $_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
+    }
+    if (stripos($h, 'Bearer ') === 0) {
+        $h = trim(substr($h, 7));
+    }
+    return $h;
+}
+
+function fund_callback_secret_debug_meta(string $provided, string $expected): array
+{
+    $dbg = [
+        'expected_key_len' => strlen($expected),
+        'provided_key_len' => strlen($provided),
+        'provided_via' => $provided !== '' ? 'body_or_query' : 'none',
+    ];
+    $auth = fund_callback_normalize_auth_header();
+    if ($auth !== '') {
+        $dbg['provided_via'] = 'authorization_header';
+        $dbg['provided_auth_len'] = strlen($auth);
+    }
+    if ($expected !== '' && $provided !== '') {
+        $dbg['body_key_matches'] = hash_equals($expected, $provided);
+    }
+    if ($expected !== '' && $auth !== '') {
+        $dbg['auth_matches'] = hash_equals($expected, $auth);
+    }
+    return $dbg;
+}
+
+$providedKey = trim((string) ($input['key'] ?? ''));
+$authToken = fund_callback_normalize_auth_header();
 $expectedKey = '';
 if (defined('ENKPAY_WEBHOOK_KEY')) {
     $expectedKey = (string) ENKPAY_WEBHOOK_KEY;
@@ -44,19 +90,26 @@ if (defined('ENKPAY_WEBHOOK_KEY')) {
 
 // Optional validation: if ENKPAY_WEBHOOK_KEY is set, require matching key.
 if ($expectedKey !== '') {
-    if ($providedKey === '') {
+    $candidate = $providedKey !== '' ? $providedKey : $authToken;
+    if ($candidate === '') {
         $__reseller_callback_code = 401;
         $__reseller_callback_json = ['status' => false, 'message' => 'Unauthorized.'];
+        if (defined('FUND_CALLBACK_DEBUG') && FUND_CALLBACK_DEBUG) {
+            $__reseller_callback_json['debug'] = fund_callback_secret_debug_meta('', $expectedKey);
+        }
         goto send;
     }
     if (!function_exists('hash_equals')) {
-        $okKey = ($providedKey === $expectedKey);
+        $okKey = ($candidate === $expectedKey);
     } else {
-        $okKey = hash_equals($expectedKey, $providedKey);
+        $okKey = hash_equals($expectedKey, $candidate);
     }
     if (!$okKey) {
         $__reseller_callback_code = 401;
         $__reseller_callback_json = ['status' => false, 'message' => 'Unauthorized.'];
+        if (defined('FUND_CALLBACK_DEBUG') && FUND_CALLBACK_DEBUG) {
+            $__reseller_callback_json['debug'] = fund_callback_secret_debug_meta($providedKey, $expectedKey);
+        }
         goto send;
     }
 }
@@ -81,19 +134,33 @@ function verifySprintPayTransaction(string $ref): array
     if ($base === '') {
         return ['ok' => false, 'amount' => null, 'message' => 'API_BASE_URL not set'];
     }
-    $url = $base . '/api/verify-transaction?ref=' . urlencode($ref);
+    $url = $base . '/api/verify-transaction';
+    $apiKey = defined('RESELLER_API_KEY') ? (string) RESELLER_API_KEY : '';
+    $headers = [
+        'Accept: application/json',
+        'Content-Type: application/json',
+    ];
+    if ($apiKey !== '') {
+        $headers[] = 'X-Api-Key: ' . $apiKey;
+    }
+    $payload = json_encode(['ref' => $ref], JSON_UNESCAPED_UNICODE);
+    if ($payload === false) {
+        return ['ok' => false, 'amount' => null, 'message' => 'verification encode failed'];
+    }
     $ch = curl_init($url);
     curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $payload,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTPHEADER => ['Accept: application/json'],
+        CURLOPT_HTTPHEADER => $headers,
     ]);
     $res = curl_exec($ch);
     $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     if ($code !== 200 || !$res) {
-        return ['ok' => false, 'amount' => null, 'message' => 'verification failed'];
+        return ['ok' => false, 'amount' => null, 'message' => 'verification failed', 'http_code' => $code];
     }
     $data = json_decode($res, true);
     if (!is_array($data)) {
@@ -108,7 +175,7 @@ function verifySprintPayTransaction(string $ref): array
         }
         return ['ok' => true, 'amount' => $amt, 'message' => 'completed'];
     }
-    return ['ok' => false, 'amount' => null, 'message' => $data['message'] ?? 'incomplete'];
+    return ['ok' => false, 'amount' => null, 'message' => $data['message'] ?? 'incomplete', 'http_code' => $code];
 }
 
 // Same as e_fund: webhook is only called on success, so having order_id + amount = success
@@ -130,6 +197,12 @@ if ($isSuccess) {
             'order_id' => $reference,
             'credited' => false,
         ];
+        if (defined('FUND_CALLBACK_DEBUG') && FUND_CALLBACK_DEBUG) {
+            $__reseller_callback_json['debug'] = [
+                'verify_message' => (string) ($v['message'] ?? ''),
+                'verify_http_code' => $v['http_code'] ?? null,
+            ];
+        }
         goto send;
     }
     if (isset($v['amount']) && $v['amount'] !== null && (float) $v['amount'] > 0) {
