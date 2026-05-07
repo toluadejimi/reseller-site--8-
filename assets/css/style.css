@@ -2072,6 +2072,34 @@ body.page-auth-split .site-wrap--auth-split {
     display: block;
     vertical-align: middle;
 }
+
+.btn-cart--loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+.btn-cart--loading .btn-cart-icon {
+    opacity: 0;
+}
+
+.btn-cart--loading::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    margin-top: -9px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-top-color: rgba(255, 255, 255, 0.95);
+    animation: btn-cart-spin 0.7s linear infinite;
+}
+
+@keyframes btn-cart-spin {
+    to { transform: rotate(360deg); }
+}
 .reseller-view-more-wrap {
     padding: 12px 16px;
     text-align: center;

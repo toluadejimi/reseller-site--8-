@@ -166,6 +166,22 @@
                 }
             });
         });
+
+        // Prevent double-submit: show loader on cart icon + disable controls.
+        document.querySelectorAll('.reseller-product-card__form').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var btn = form.querySelector('.btn-cart');
+                if (btn) {
+                    btn.classList.add('btn-cart--loading');
+                    btn.setAttribute('aria-disabled', 'true');
+                    btn.disabled = true;
+                }
+                var qty = form.querySelector('input[name=\"qty\"]');
+                if (qty) {
+                    qty.readOnly = true;
+                }
+            });
+        });
     }
 
     function humanizeCatalogError(msg) {
