@@ -131,36 +131,33 @@ if ($reference === '' || $amount <= 0) {
 
 function verifySprintPayTransaction(string $ref): array
 {
-    $base = '';
-    if (defined('SPRINTPAY_VERIFY_BASE_URL') && trim((string) SPRINTPAY_VERIFY_BASE_URL) !== '') {
-        $base = rtrim((string) SPRINTPAY_VERIFY_BASE_URL, '/');
-    } else {
-        $base = rtrim(defined('API_BASE_URL') ? (string) API_BASE_URL : '', '/');
-    }
     $enabled = defined('SPRINTPAY_VERIFY_ENABLED') ? (bool) SPRINTPAY_VERIFY_ENABLED : false;
     if (!$enabled) {
         return ['ok' => true, 'amount' => null, 'message' => 'verification disabled'];
     }
-    if ($base === '') {
-        return ['ok' => false, 'amount' => null, 'message' => 'Verify base URL not set'];
+    $base = rtrim(defined('API_BASE_URL') ? (string) API_BASE_URL : '', '/');
+    $url = '';
+    if (defined('SPRINTPAY_VERIFY_URL') && trim((string) SPRINTPAY_VERIFY_URL) !== '') {
+        $url = trim((string) SPRINTPAY_VERIFY_URL);
+    } elseif ($base !== '') {
+        $url = $base . '/api/verify-transaction';
     }
-    $url = $base . '/api/verify-transaction';
-    $apiKey = defined('RESELLER_API_KEY') ? (string) RESELLER_API_KEY : '';
-    $headers = [
-        'Accept: application/json',
-        'Content-Type: application/json',
-    ];
-    if ($apiKey !== '') {
-        $headers[] = 'X-Api-Key: ' . $apiKey;
+    if ($url === '') {
+        return ['ok' => false, 'amount' => null, 'message' => 'Verify URL not set'];
     }
-    $payload = json_encode(['ref' => $ref], JSON_UNESCAPED_UNICODE);
-    if ($payload === false) {
-        return ['ok' => false, 'amount' => null, 'message' => 'verification encode failed'];
+    // Many gateways support GET verification. We'll use GET by default for the external SprintPay URL.
+    $sep = (strpos($url, '?') !== false) ? '&' : '?';
+    $urlWithRef = $url . $sep . 'ref=' . urlencode($ref);
+
+    $headers = ['Accept: application/json'];
+    // Some verifiers require merchant key in Authorization. We'll send SPRINTPAY_MERCHANT_ID when present.
+    $merchant = defined('SPRINTPAY_MERCHANT_ID') ? trim((string) SPRINTPAY_MERCHANT_ID) : '';
+    if ($merchant !== '') {
+        $headers[] = 'Authorization: ' . $merchant;
     }
-    $ch = curl_init($url);
+
+    $ch = curl_init($urlWithRef);
     curl_setopt_array($ch, [
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $payload,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_FOLLOWLOCATION => true,

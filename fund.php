@@ -54,11 +54,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $sep = strpos($redirect, '?') !== false ? '&' : '?';
                     $redirect .= $sep . 'ref=' . urlencode($ref) . '&amount=' . urlencode((string)$amountRounded);
                 }
+                if (strpos($redirect, 'order_id=') === false) {
+                    $sep = strpos($redirect, '?') !== false ? '&' : '?';
+                    $redirect .= $sep . 'order_id=' . urlencode($ref);
+                }
+                if (strpos($redirect, 'callback=') === false && strpos($redirect, 'callback_url=') === false) {
+                    $sep = strpos($redirect, '?') !== false ? '&' : '?';
+                    $redirect .= $sep . 'callback=' . urlencode($callbackUrl);
+                }
                 header('Location: ' . $redirect);
                 exit;
             }
             $sprintPayPayUrl = 'https://web.sprintpay.online/pay';
-            $redirect = $sprintPayPayUrl . '?amount=' . urlencode((string)$amountRounded) . '&key=' . urlencode($sprintpayKey) . '&ref=' . urlencode($ref) . '&email=' . urlencode($userEmail);
+            // Some gateways track the reference as order_id; send both for compatibility.
+            $redirect = $sprintPayPayUrl
+                . '?amount=' . urlencode((string)$amountRounded)
+                . '&key=' . urlencode($sprintpayKey)
+                . '&ref=' . urlencode($ref)
+                . '&order_id=' . urlencode($ref)
+                . '&email=' . urlencode($userEmail)
+                . '&callback=' . urlencode($callbackUrl);
             header('Location: ' . $redirect);
             exit;
         }
