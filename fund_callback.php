@@ -131,13 +131,18 @@ if ($reference === '' || $amount <= 0) {
 
 function verifySprintPayTransaction(string $ref): array
 {
-    $base = rtrim(defined('API_BASE_URL') ? (string) API_BASE_URL : '', '/');
+    $base = '';
+    if (defined('SPRINTPAY_VERIFY_BASE_URL') && trim((string) SPRINTPAY_VERIFY_BASE_URL) !== '') {
+        $base = rtrim((string) SPRINTPAY_VERIFY_BASE_URL, '/');
+    } else {
+        $base = rtrim(defined('API_BASE_URL') ? (string) API_BASE_URL : '', '/');
+    }
     $enabled = defined('SPRINTPAY_VERIFY_ENABLED') ? (bool) SPRINTPAY_VERIFY_ENABLED : false;
     if (!$enabled) {
         return ['ok' => true, 'amount' => null, 'message' => 'verification disabled'];
     }
     if ($base === '') {
-        return ['ok' => false, 'amount' => null, 'message' => 'API_BASE_URL not set'];
+        return ['ok' => false, 'amount' => null, 'message' => 'Verify base URL not set'];
     }
     $url = $base . '/api/verify-transaction';
     $apiKey = defined('RESELLER_API_KEY') ? (string) RESELLER_API_KEY : '';
