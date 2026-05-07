@@ -90,8 +90,9 @@ if (defined('ENKPAY_WEBHOOK_KEY')) {
 
 // Optional validation: if ENKPAY_WEBHOOK_KEY is set, require matching key.
 if ($expectedKey !== '') {
-    $candidate = $providedKey !== '' ? $providedKey : $authToken;
-    if ($candidate === '') {
+    // EnkPay may send both a JSON `key` and an `Authorization` header; accept either.
+    $hasAny = ($providedKey !== '' || $authToken !== '');
+    if (!$hasAny) {
         $__reseller_callback_code = 401;
         $__reseller_callback_json = ['status' => false, 'message' => 'Unauthorized.'];
         if (defined('FUND_CALLBACK_DEBUG') && FUND_CALLBACK_DEBUG) {
@@ -99,11 +100,15 @@ if ($expectedKey !== '') {
         }
         goto send;
     }
-    if (!function_exists('hash_equals')) {
-        $okKey = ($candidate === $expectedKey);
-    } else {
-        $okKey = hash_equals($expectedKey, $candidate);
+    $bodyOk = false;
+    $authOk = false;
+    if ($providedKey !== '') {
+        $bodyOk = function_exists('hash_equals') ? hash_equals($expectedKey, $providedKey) : ($expectedKey === $providedKey);
     }
+    if ($authToken !== '') {
+        $authOk = function_exists('hash_equals') ? hash_equals($expectedKey, $authToken) : ($expectedKey === $authToken);
+    }
+    $okKey = ($bodyOk || $authOk);
     if (!$okKey) {
         $__reseller_callback_code = 401;
         $__reseller_callback_json = ['status' => false, 'message' => 'Unauthorized.'];
@@ -161,6 +166,11 @@ function verifySprintPayTransaction(string $ref): array
     curl_close($ch);
     if ($code !== 200 || !$res) {
         return ['ok' => false, 'amount' => null, 'message' => 'verification failed', 'http_code' => $code];
+    }
+    // WAF/HTML pages (Imunify360, etc.) may return HTTP 200 with HTML; never treat as JSON success.
+    $trim = ltrim((string) $res);
+    if ($trim !== '' && ($trim[0] === '<' || stripos($res, 'Imunify360') !== false)) {
+        return ['ok' => false, 'amount' => null, 'message' => 'verification blocked (WAF/HTML response)', 'http_code' => $code];
     }
     $data = json_decode($res, true);
     if (!is_array($data)) {
